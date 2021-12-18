@@ -4,6 +4,8 @@ import winkNLP, {
 	Bow,
 	CustomEntityExample,
 	Document,
+	ItemEntity,
+	ItemToken,
 	WinkMethods,
 } from "wink-nlp";
 import { DEFAULT_SETTINGS } from "./const";
@@ -71,13 +73,28 @@ export default class NLPPlugin extends Plugin {
 		}
 	}
 
+	getNoStopBoW(doc: Document, type: "tokens" | "entities" = "tokens") {
 		const { as, its } = this.model;
-		return doc
-			.tokens()
+		if (!doc) return {};
+		return doc[type]()
 			.filter(
-				(t) => t.out(its.type) === "word" && !t.out(its.stopWordFlag)
+				(item: ItemToken | ItemEntity) =>
+					item.out(its.type) === "word" && !item.out(its.stopWordFlag)
 			)
 			.out(its.value, as.bow) as Bow;
+	}
+	getNoStopSet(
+		doc: Document,
+		type: "tokens" | "entities" = "tokens"
+	): Set<string> {
+		const { as, its } = this.model;
+		if (!doc) return new Set();
+		return doc[type]()
+			.filter(
+				(item: ItemToken | ItemEntity) =>
+					item.out(its.type) === "word" && !item.out(its.stopWordFlag)
+			)
+			.out(its.value, as.set) as Set<string>;
 	}
 
 	async getDocFromFile(
