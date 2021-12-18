@@ -16,6 +16,17 @@ export default class NLPPlugin extends Plugin {
 		this.addSettingTab(new SettingTab(this.app, this));
 
 		this.model = winkNLP(model);
+
+		const { customEntityFilePath } = this.settings;
+		if (customEntityFilePath !== "") {
+			const customEntitiesStr = await this.app.vault.adapter.read(
+				normalizePath(customEntityFilePath)
+			);
+			const customEntities: CustomEntityExample[] =
+				JSON.parse(customEntitiesStr);
+			this.model.learnCustomEntities(customEntities);
+		}
+
 		this.addCommand({
 			id: "nlp",
 			name: "NLP",

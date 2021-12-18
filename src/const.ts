@@ -1,3 +1,5 @@
 import { Settings } from "./interfaces";
 
-export const DEFAULT_SETTINGS: Settings = {};
+export const DEFAULT_SETTINGS: Settings = {
+	customEntityFilePath: "",
+};
