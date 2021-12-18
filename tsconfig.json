@@ -1,16 +1,22 @@
 {
+  "include": [
+    "src/**/*",
+    "src/*",
+    "**/*.ts",
+    "test/**/*.ts",
+    "test/*.ts",
+    "typings/**/*.ts"
+  ],
+  "exclude": ["node_modules/*"],
   "compilerOptions": {
+    "module": "esnext",
+    "types": ["node"],
     "baseUrl": ".",
-    "inlineSourceMap": true,
-    "inlineSources": true,
-    "module": "ESNext",
-    "target": "ES6",
-    "allowJs": true,
-    "noImplicitAny": true,
+    "paths": {
+      "src": ["src/*"]
+    },
+    "esModuleInterop": true,
     "moduleResolution": "node",
-    "importHelpers": true,
-    "lib": ["es2021"]
-  },
-  "include": ["src/**/*", "src/*", "**/*.ts"],
-  "exclude": ["node_modules/*"]
+    "lib": ["ES2019", "DOM"]
+  }
 }
