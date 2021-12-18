@@ -1,4 +1,4 @@
-import { normalizePath, Plugin } from "obsidian";
+import { normalizePath, Notice, Plugin } from "obsidian";
 import model from "wink-eng-lite-web-model";
 import winkNLP, {
 	Bow,
@@ -51,9 +51,7 @@ export default class NLPPlugin extends Plugin {
 		});
 
 		this.app.workspace.onLayoutReady(async () => {
-			console.time("refreshDocs");
 			await this.refreshDocs();
-			console.timeEnd("refreshDocs");
 		});
 	}
 
@@ -68,9 +66,19 @@ export default class NLPPlugin extends Plugin {
 	}
 
 	async refreshDocs() {
-		for (const file of this.app.vault.getMarkdownFiles()) {
-			this.Docs[file.path] = await this.getDocFromFile(file);
+		console.time("refreshDocs");
+		try {
+			for (const file of this.app.vault.getMarkdownFiles()) {
+				this.Docs[file.path] = await this.getDocFromFile(file);
+			}
+			new Notice("Docs refreshed");
+		} catch (e) {
+			console.log(e);
+			new Notice(
+				"An error occured, check the console for more information."
+			);
 		}
+		console.timeEnd("refreshDocs");
 	}
 
 	getNoStopBoW(doc: Document, type: "tokens" | "entities" = "tokens") {
