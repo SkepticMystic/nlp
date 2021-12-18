@@ -1,64 +1,109 @@
 <script lang="ts">
+	import { onMount } from "svelte";
 	import { Document, WinkMethods } from "wink-nlp";
+	import { copy } from "obsidian-community-lib";
 
+	export let originalText: string;
 	export let model: WinkMethods;
-	export let doc: Document;
+
+	let doc: Document;
+
+	onMount(async () => {
+		doc = model.readDoc(originalText);
+	});
 
 	let [markTokens, markEntities, markSentences] = [false, false, false];
 
 	const { its, as } = model;
 	let [markStart, markEnd] = ["<mark>", "</mark>"];
 
-	$: console.log({ markEntities, markSentences, markTokens });
+	let text = originalText;
 
 	$: {
-		doc.tokens().each((ent) =>
-			ent.markup(markTokens ? markStart : "", markTokens ? markEnd : "")
-		);
-		doc.entities().each((ent) =>
-			ent.markup(
-				markEntities ? markStart : "",
-				markEntities ? markEnd : ""
-			)
-		);
-		doc.sentences().each((ent) =>
-			ent.markup(
-				markSentences ? markStart : "",
-				markSentences ? markEnd : ""
-			)
-		);
+		doc = model.readDoc(originalText);
 
-		doc.out(its.markedUpText);
+		if (markTokens)
+			doc.tokens().each((ent) => ent.markup(markStart, markEnd));
+		if (markEntities)
+			doc.entities().each((ent) => ent.markup(markStart, markEnd));
+		if (markSentences)
+			doc.sentences().each((ent) => ent.markup(markStart, markEnd));
+		text = doc.out(its.markedUpText);
 	}
 </script>
 
-{#key [markEntities, markSentences, markTokens]}
-	<div class="doc-content">{@html doc.out(its.markedUpText)}</div>
-{/key}
-<div>
-	<label>
-		<input type="checkbox" bind:checked={markTokens} />
-		Tokens
-	</label>
-</div>
-<div>
-	<label>
-		<input type="checkbox" bind:checked={markEntities} />
-		Entities
-	</label>
-</div>
-<div>
-	<label>
-		<input type="checkbox" bind:checked={markSentences} />
-		Sentences
-	</label>
-</div>
+<div class="doc-content">{@html text}</div>
+<span class="options-span">
+	<div class="left-options">
+		<h4>Items to Mark</h4>
+		<label>
+			<input type="checkbox" bind:checked={markTokens} />
+			Tokens
+		</label>
+		<label>
+			<input type="checkbox" bind:checked={markEntities} />
+			Entities
+		</label>
+		<label>
+			<input type="checkbox" bind:checked={markSentences} />
+			Sentences
+		</label>
+	</div>
+	<div class="right-options">
+		<h4>Markup</h4>
+		<label>
+			<input type="text" bind:value={markStart} width="10" />
+			Start
+		</label>
+		<label>
+			<input type="text" bind:value={markEnd} width="10" />
+			End
+		</label>
+	</div>
+</span>
+<span class="button-span">
+	<button
+		on:click={async () => {
+			copy(text);
+		}}
+	>
+		Copy
+	</button>
+	<!-- TODO make this work -->
+	<button
+		on:click={async () => {
+			copy(text);
+		}}
+		aria-label="Will overwrite selected text"
+	>
+		Insert at cursor
+	</button>
+</span>
 
 <style>
 	.doc-content {
 		border: 1px solid black;
 		border-radius: 10px;
 		padding: 10px;
+		max-height: 500px;
+	}
+
+	.left-options,
+	.right-options {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.options-span {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+	.button-span {
+		margin-top: 10px;
+		display: flex;
+		flex-direction: row;
 	}
 
 	mark {

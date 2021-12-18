@@ -17,9 +17,11 @@ export class MarkupModal extends Modal {
 		const { model } = plugin;
 		contentEl.empty();
 
-		const doc = await plugin.docOfCurrFile();
+		const file = this.app.workspace.getActiveFile();
+		if (!file) return null;
+		const originalText = await this.app.vault.cachedRead(file);
 
-		new Markup({ target: contentEl, props: { model, doc } });
+		new Markup({ target: contentEl, props: { originalText, model } });
 	}
 
 	onClose() {
