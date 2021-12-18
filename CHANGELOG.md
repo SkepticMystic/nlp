@@ -1,4 +1,11 @@
 ## Changelog
+### [0.0.3](https://github.com/SkepticMystic/nlp/compare/0.0.2...0.0.3) (2021-12-18)
+
+
+### Features
+
+* :sparkles: Consistent timing and notice for refreshDocs ([24af0db](https://github.com/SkepticMystic/nlp/commit/24af0db7c3bf51646e7c9a9e599dc20b6ec7e71d))
+
 ### 0.0.2 (2021-12-18)
 
 
