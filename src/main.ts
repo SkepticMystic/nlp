@@ -1,10 +1,16 @@
-import { Plugin } from "obsidian";
+import { normalizePath, Plugin } from "obsidian";
 import model from "wink-eng-lite-web-model";
-import winkNLP, { Document, WinkMethods } from "wink-nlp";
+import winkNLP, {
+	Bow,
+	CustomEntityExample,
+	Document,
+	WinkMethods,
+} from "wink-nlp";
 import { DEFAULT_SETTINGS } from "./const";
 import { Settings } from "./interfaces";
 import { MarkupModal } from "./MarkupModal";
 import { SettingTab } from "./SettingTab";
+import similarity from "wink-nlp/utilities/similarity";
 
 export default class NLPPlugin extends Plugin {
 	settings: Settings;
@@ -34,6 +40,20 @@ export default class NLPPlugin extends Plugin {
 				new MarkupModal(this.app, this).open();
 			},
 		});
+		this.addCommand({
+			id: "bow",
+			name: "BoW",
+			callback: async () => {
+				const { as, its } = this.model;
+				const currDoc = await this.getDocFromFile();
+				const targetDoc = await this.getDocFromFile();
+				if (!currDoc || !targetDoc) return;
+
+				const bow = this.getNoStopBoW(currDoc);
+
+				console.log(bow);
+			},
+		});
 	}
 
 	onunload() {}
@@ -46,8 +66,19 @@ export default class NLPPlugin extends Plugin {
 		);
 	}
 
-	async docOfCurrFile(): Promise<Document | null> {
-		const file = this.app.workspace.getActiveFile();
+	getNoStopBoW(doc: Document) {
+		const { as, its } = this.model;
+		return doc
+			.tokens()
+			.filter(
+				(t) => t.out(its.type) === "word" && !t.out(its.stopWordFlag)
+			)
+			.out(its.value, as.bow) as Bow;
+	}
+
+	async getDocFromFile(
+		file = this.app.workspace.getActiveFile()
+	): Promise<Document | null> {
 		if (!file) return null;
 		const text = await this.app.vault.cachedRead(file);
 
