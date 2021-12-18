@@ -1,3 +1,3 @@
-import { MyPluginSettings } from "./interfaces";
+import { Settings } from "./interfaces";
 
-export const DEFAULT_SETTINGS: MyPluginSettings = {};
+export const DEFAULT_SETTINGS: Settings = {};

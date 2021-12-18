@@ -1,1 +1,1 @@
-export interface MyPluginSettings {}
+export interface Settings {}
