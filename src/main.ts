@@ -10,11 +10,11 @@ import { DEFAULT_SETTINGS } from "./const";
 import { Settings } from "./interfaces";
 import { MarkupModal } from "./MarkupModal";
 import { SettingTab } from "./SettingTab";
-import similarity from "wink-nlp/utilities/similarity";
 
 export default class NLPPlugin extends Plugin {
 	settings: Settings;
 	model: WinkMethods;
+	Docs: { [path: string]: Document } = {};
 
 	async onload() {
 		console.log("loading");
@@ -34,25 +34,24 @@ export default class NLPPlugin extends Plugin {
 		}
 
 		this.addCommand({
-			id: "nlp",
-			name: "NLP",
-			callback: async () => {
+			id: "markup-modal",
+			name: "Open Markup Modal",
+			callback: () => {
 				new MarkupModal(this.app, this).open();
 			},
 		});
 		this.addCommand({
-			id: "bow",
-			name: "BoW",
+			id: "refresh-docs",
+			name: "Refresh Docs",
 			callback: async () => {
-				const { as, its } = this.model;
-				const currDoc = await this.getDocFromFile();
-				const targetDoc = await this.getDocFromFile();
-				if (!currDoc || !targetDoc) return;
-
-				const bow = this.getNoStopBoW(currDoc);
-
-				console.log(bow);
+				await this.refreshDocs();
 			},
+		});
+
+		this.app.workspace.onLayoutReady(async () => {
+			console.time("refreshDocs");
+			await this.refreshDocs();
+			console.timeEnd("refreshDocs");
 		});
 	}
 
@@ -66,7 +65,12 @@ export default class NLPPlugin extends Plugin {
 		);
 	}
 
-	getNoStopBoW(doc: Document) {
+	async refreshDocs() {
+		for (const file of this.app.vault.getMarkdownFiles()) {
+			this.Docs[file.path] = await this.getDocFromFile(file);
+		}
+	}
+
 		const { as, its } = this.model;
 		return doc
 			.tokens()
