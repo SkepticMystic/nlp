@@ -1,3 +1,6 @@
+import { StateEffect, StateField } from "@codemirror/state";
+// import * as Worker from "./Workers/refreshDocs.worker";
+import { Decoration, EditorView } from "@codemirror/view";
 import compromise from "compromise";
 import { normalizePath, Notice, Plugin, TFile } from "obsidian";
 import { copy } from "obsidian-community-lib";
@@ -11,11 +14,12 @@ import winkNLP, {
 	ItemToken,
 	WinkMethods,
 } from "wink-nlp";
+import Tagger from "wink-pos-tagger";
 import { DEFAULT_SETTINGS } from "./const";
 import { Settings } from "./interfaces";
 import { MarkupModal } from "./MarkupModal";
 import { SettingTab } from "./SettingTab";
-// import * as Worker from "./Workers/refreshDocs.worker";
+const posTagger = require("wink-pos-tagger");
 
 export default class NLPPlugin extends Plugin {
 	settings: Settings;
@@ -60,6 +64,105 @@ export default class NLPPlugin extends Plugin {
 				await this.refreshDocs();
 			},
 		});
+
+		// const addMarks = StateEffect.define<Decoration>(),
+		// 	filterMarks = StateEffect.define();
+
+		// // This value must be added to the set of extensions to enable this
+		// const markField = StateField.define({
+		// 	// Start with an empty set of decorations
+		// 	create() {
+		// 		return Decoration.none;
+		// 	},
+		// 	// This is called whenever the editor updates—it computes the new set
+		// 	update(value, tr) {
+		// 		// Move the decorations to account for document changes
+		// 		value = value.map(tr.changes);
+		// 		// If this transaction adds or removes decorations, apply those changes
+		// 		for (let effect of tr.effects) {
+		// 			if (effect.is(addMarks))
+		// 				value = value.update({ add: effect.value, sort: true });
+		// 			else if (effect.is(filterMarks))
+		// 				value = value.update({ filter: effect.value });
+		// 		}
+		// 		return value;
+		// 	},
+		// 	// Indicate that this field provides a set of decorations
+		// 	provide: (f) => EditorView.decorations.from(f),
+		// });
+		// this.registerEditorExtension(markField);
+
+		// const strikeMark = Decoration.mark({
+		// 	attributes: { style: "text-decoration: line-through" },
+		// });
+
+		// this.addCommand({
+		// 	id: "tag-pos",
+		// 	name: "Tag PoS",
+		// 	editorCallback: async (editor) => {
+		// 		(editor.cm as EditorView).dispatch({
+		// 			effects: addMarks.of([strikeMark.range(1, 40)]),
+		// 		});
+
+		// 		const tagger: Tagger = posTagger();
+		// 		console.log(
+		// 			tagger.tagSentence(
+		// 				"He is trying to fish for fish in the lake."
+		// 			)
+		// 		);
+		// function addIndentationMarkers(view: EditorView) {
+		// 	const builder = new RangeSetBuilder<Decoration>();
+
+		// 	for (const { from, to } of view.visibleRanges) {
+		// 		let pos = from;
+
+		// 		while (pos <= to) {
+		// 			const line = view.state.doc.lineAt(pos);
+		// 			const { text } = line;
+
+		// 			// Decorate empty line
+		// 			if (text.trim().length === 0) {
+		// 				const indentationWidget = Decoration.widget({
+		// 					widget: myWidget,
+		// 				});
+
+		// 				builder.add(
+		// 					line.from,
+		// 					line.from,
+		// 					indentationWidget
+		// 				);
+		// 			}
+
+		// 			// Move on to next line
+		// 			pos = line.to + 1;
+		// 		}
+		// 	}
+
+		// 	return builder.finish();
+		// }
+
+		// function createIndentMarkerPlugin() {
+		// 	return ViewPlugin.define(
+		// 		(view) => ({
+		// 			decorations: addIndentationMarkers(view),
+		// 			update(update) {
+		// 				if (
+		// 					update.docChanged ||
+		// 					update.viewportChanged
+		// 				) {
+		// 					this.decorations = addIndentationMarkers(
+		// 						update.view
+		// 					);
+		// 				}
+		// 			},
+		// 		}),
+		// 		{
+		// 			decorations: (v) => v.decorations,
+		// 		}
+		// 	);
+		// }
+		// 	},
+		// });
 
 		compromise.extend(require("compromise-numbers"));
 		compromise.extend(require("compromise-adjectives"));
