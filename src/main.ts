@@ -1,4 +1,6 @@
+import compromise from "compromise";
 import { normalizePath, Notice, Plugin } from "obsidian";
+import { copy } from "obsidian-community-lib";
 import model from "wink-eng-lite-web-model";
 import winkNLP, {
 	Bow,
@@ -12,6 +14,7 @@ import { DEFAULT_SETTINGS } from "./const";
 import { Settings } from "./interfaces";
 import { MarkupModal } from "./MarkupModal";
 import { SettingTab } from "./SettingTab";
+// import * as Worker from "./Workers/refreshDocs.worker";
 
 export default class NLPPlugin extends Plugin {
 	settings: Settings;
@@ -50,8 +53,85 @@ export default class NLPPlugin extends Plugin {
 			},
 		});
 
+		compromise.extend(require("compromise-numbers"));
+		compromise.extend(require("compromise-adjectives"));
+		compromise.extend(require("compromise-dates"));
+		Object.entries({
+			verbs: [
+				"toPastTense",
+				"toPresentTense",
+				"toFutureTense",
+				"toInfinitive",
+				"toGerund",
+				"toParticiple",
+				"toPositive",
+				"toNegative",
+			],
+			nouns: ["toPlural", "toSingular", "toPossessive"],
+			adjectives: [
+				"toSuperlative",
+				"toComparative",
+				"toAdverb",
+				"toVerb",
+				"toNoun",
+			],
+			dates: ["toShortForm", "toLongForm"],
+
+			numbers: [
+				"toText",
+				"toNumber",
+				"toOrdinal",
+				"toCardinal",
+				"increment",
+				"decrement",
+				"toLocaleString",
+			],
+			fractions: ["toDecimal", "normalize", "toText", "toPercentage"],
+			percentages: ["toFraction"],
+		}).forEach(([pos, fns]: [string, string[]]) => {
+			fns.forEach((fn) => {
+				this.addCommand({
+					id: `${pos} - ${fn}`,
+					name: `${pos} - ${fn}`,
+					editorCallback: async (ed) => {
+						const sel = ed.getSelection();
+						const compDoc = compromise(sel);
+						compDoc[pos]()[fn]();
+						const newSel = compDoc.text();
+
+						ed.replaceSelection(newSel);
+					},
+				});
+			});
+		});
+
+		[
+			"emails",
+			"emoticons",
+			"emjois",
+			"atMentions",
+			"abbreviations",
+			"people",
+			"places",
+			"organizations",
+			"topics",
+		].forEach((entity) => {
+			this.addCommand({
+				id: `entity - ${entity}`,
+				name: `entity - ${entity}`,
+				editorCallback: async (ed) => {
+					const sel = ed.getSelection();
+					const compDoc = compromise(sel);
+					const entities = compDoc[entity]().out("array");
+					await copy(entities.join(", "));
+				},
+			});
+		});
+
 		this.app.workspace.onLayoutReady(async () => {
 			await this.refreshDocs();
+			// const worker = Worker();
+			// worker.postMessage("{ message: 'hello' }");
 		});
 	}
 
