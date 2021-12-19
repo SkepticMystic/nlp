@@ -1,6 +1,6 @@
 {
 	"name": "nlp",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"description": "This is a sample plugin for Obsidian.",
 	"main": "main.js",
 	"scripts": {

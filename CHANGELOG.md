@@ -1,4 +1,12 @@
 ## Changelog
+### [0.0.5](https://github.com/SkepticMystic/nlp/compare/0.0.4...0.0.5) (2021-12-19)
+
+
+### Features
+
+* **API:** :sparkles: Option to refreshDocsOnLoad or not ([bc3ab1f](https://github.com/SkepticMystic/nlp/commit/bc3ab1f2ed73432ac78591973e05aeffb8069ab1))
+* **MatchModal:** :sparkles: Match Modal! Use Compromise.js match functionality ([a435567](https://github.com/SkepticMystic/nlp/commit/a43556744847606d3c3737ac0c6b045fea6807fd))
+
 ### [0.0.4](https://github.com/SkepticMystic/nlp/compare/0.0.3...0.0.4) (2021-12-19)
 
 
