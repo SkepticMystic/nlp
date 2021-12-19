@@ -17,9 +17,8 @@ export class MarkupModal extends Modal {
 		const { winkModel } = plugin;
 		contentEl.empty();
 
-		const file = this.app.workspace.getActiveFile();
-		if (!file) return null;
-		const originalText = await this.app.vault.cachedRead(file);
+		const originalText = await plugin.getActiveFileContent();
+		if (!originalText) return;
 
 		new Markup({
 			target: contentEl,
