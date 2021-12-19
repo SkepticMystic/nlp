@@ -82,8 +82,8 @@
 
 <style>
 	.doc-content {
-		border: 1px solid black;
-		border-radius: 10px;
+		border: 1px solid var(--background-modifier-border);
+		border-radius: 5px;
 		padding: 10px;
 		max-height: 500px;
 		overflow-y: scroll;

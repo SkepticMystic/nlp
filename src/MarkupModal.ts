@@ -14,14 +14,17 @@ export class MarkupModal extends Modal {
 
 	async onOpen() {
 		const { contentEl, plugin } = this;
-		const { model } = plugin;
+		const { winkModel } = plugin;
 		contentEl.empty();
 
 		const file = this.app.workspace.getActiveFile();
 		if (!file) return null;
 		const originalText = await this.app.vault.cachedRead(file);
 
-		new Markup({ target: contentEl, props: { originalText, model } });
+		new Markup({
+			target: contentEl,
+			props: { originalText, model: winkModel },
+		});
 	}
 
 	onClose() {

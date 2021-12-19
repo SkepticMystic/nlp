@@ -1,6 +1,7 @@
 import compromise from "compromise";
-import { normalizePath, Notice, Plugin } from "obsidian";
+import { normalizePath, Notice, Plugin, TFile } from "obsidian";
 import { copy } from "obsidian-community-lib";
+import { MatchModal } from "./MatchModal";
 import model from "wink-eng-lite-web-model";
 import winkNLP, {
 	Bow,
@@ -18,7 +19,7 @@ import { SettingTab } from "./SettingTab";
 
 export default class NLPPlugin extends Plugin {
 	settings: Settings;
-	model: WinkMethods;
+	winkModel: WinkMethods;
 	Docs: { [path: string]: Document } = {};
 
 	async onload() {
@@ -26,7 +27,7 @@ export default class NLPPlugin extends Plugin {
 		await this.loadSettings();
 		this.addSettingTab(new SettingTab(this.app, this));
 
-		this.model = winkNLP(model);
+		this.winkModel = winkNLP(model);
 
 		const { customEntityFilePath } = this.settings;
 		if (customEntityFilePath !== "") {
@@ -35,7 +36,7 @@ export default class NLPPlugin extends Plugin {
 			);
 			const customEntities: CustomEntityExample[] =
 				JSON.parse(customEntitiesStr);
-			this.model.learnCustomEntities(customEntities);
+			this.winkModel.learnCustomEntities(customEntities);
 		}
 
 		this.addCommand({
@@ -43,6 +44,13 @@ export default class NLPPlugin extends Plugin {
 			name: "Open Markup Modal",
 			callback: () => {
 				new MarkupModal(this.app, this).open();
+			},
+		});
+		this.addCommand({
+			id: "match-modal",
+			name: "Open Match Modal",
+			callback: () => {
+				new MatchModal(this.app, this).open();
 			},
 		});
 		this.addCommand({
@@ -149,7 +157,7 @@ export default class NLPPlugin extends Plugin {
 		console.time("refreshDocs");
 		try {
 			for (const file of this.app.vault.getMarkdownFiles()) {
-				this.Docs[file.path] = await this.getDocFromFile(file);
+				this.Docs[file.path] = await this.getWinkDocFromFile(file);
 			}
 			new Notice("Docs refreshed");
 		} catch (e) {
@@ -162,7 +170,7 @@ export default class NLPPlugin extends Plugin {
 	}
 
 	getNoStopBoW(doc: Document, type: "tokens" | "entities" = "tokens") {
-		const { as, its } = this.model;
+		const { as, its } = this.winkModel;
 		if (!doc) return {};
 		return doc[type]()
 			.filter(
@@ -175,7 +183,7 @@ export default class NLPPlugin extends Plugin {
 		doc: Document,
 		type: "tokens" | "entities" = "tokens"
 	): Set<string> {
-		const { as, its } = this.model;
+		const { as, its } = this.winkModel;
 		if (!doc) return new Set();
 		return doc[type]()
 			.filter(
@@ -185,12 +193,14 @@ export default class NLPPlugin extends Plugin {
 			.out(its.value, as.set) as Set<string>;
 	}
 
-	async getDocFromFile(
+	async getWinkDocFromFile(
 		file = this.app.workspace.getActiveFile()
 	): Promise<Document | null> {
 		if (!file) return null;
 		const text = await this.app.vault.cachedRead(file);
 
+		return this.winkModel.readDoc(text);
+	}
 
 	async getActiveFileContent(cached = true): Promise<string | null> {
 		const currFile = this.app.workspace.getActiveFile();
