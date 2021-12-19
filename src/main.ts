@@ -191,7 +191,12 @@ export default class NLPPlugin extends Plugin {
 		if (!file) return null;
 		const text = await this.app.vault.cachedRead(file);
 
-		return this.model.readDoc(text);
+
+	async getActiveFileContent(cached = true): Promise<string | null> {
+		const currFile = this.app.workspace.getActiveFile();
+		if (!(currFile instanceof TFile)) return null;
+		if (cached) return await this.app.vault.cachedRead(currFile);
+		else return await this.app.vault.read(currFile);
 	}
 
 	async saveSettings() {
