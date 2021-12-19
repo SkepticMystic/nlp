@@ -4,6 +4,7 @@
         "MatchModal",
         "API",
         "PosModal",
-        "EditorPoS"
+        "EditorPoS",
+        "HighlightPoS"
     ]
 }

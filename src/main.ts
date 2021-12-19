@@ -12,7 +12,6 @@ import winkNLP, {
 	ItemToken,
 	WinkMethods,
 } from "wink-nlp";
-import Tagger from "wink-pos-tagger";
 import { DEFAULT_SETTINGS } from "./const";
 import { Sentiment, Settings } from "./interfaces";
 import { MarkupModal } from "./MarkupModal";
@@ -78,7 +77,6 @@ export default class NLPPlugin extends Plugin {
 			update(value, tr) {
 				// Move the decorations to account for document changes
 				value = value.map(tr.changes);
-				// If this transaction adds or removes decorations, apply those changes
 				for (let effect of tr.effects) {
 					if (effect.is(addMarks))
 						value = value.update({ add: effect.value, sort: true });
@@ -92,32 +90,59 @@ export default class NLPPlugin extends Plugin {
 		});
 		this.registerEditorExtension(markField);
 
-		const strikeMark = Decoration.mark({
-			attributes: { style: "text-decoration: line-through" },
-		});
+		const posMark = (...classes: string[]) =>
+			Decoration.mark({ class: `${classes.join(" ")}` });
 
-		const posMark = (tag: string, pos: string) =>
-			Decoration.mark({ class: `${tag} ${pos}` });
+		// this.addCommand({
+		// 	id: "highlight-pos",
+		// 	name: "Highlight PoS",
+		// 	editorCallback: async (editor) => {
+		// 		let content = editor.getValue();
+		// 		const tagger: Tagger = posTagger();
+		// 		const tagged = tagger.tagSentence(content);
 
+		// 		let currOffset = 0;
+		// 		const marks = tagged.map((tag) => {
+		// 			const { value } = tag;
+		// 			const index = content.indexOf(value, currOffset);
+		// 			currOffset = index + value.length;
+
+		// 			return posMark(tag.tag, tag.pos).range(
+		// 				index,
+		// 				index + value.length
+		// 			);
+		// 		});
+
+		// 		(editor.cm as EditorView).dispatch({
+		// 			effects: addMarks.of(marks),
+		// 		});
+		// 	},
+		// });
 		this.addCommand({
-			id: "tag-pos",
-			name: "Tag PoS",
+			id: "highlight-pos",
+			name: "Highlight PoS",
 			editorCallback: async (editor) => {
 				let content = editor.getValue();
-				const tagger: Tagger = posTagger();
-				const tagged = tagger.tagSentence(content);
+				const doc = compromise(content);
+				const json = doc.json();
+
+				const termsArr: {
+					text: string;
+					tags: string[];
+					pre: string;
+					post: string;
+				}[] = [];
+				json.forEach((sentence) => termsArr.push(...sentence.terms));
+
+				console.log(termsArr);
 
 				let currOffset = 0;
-				const marks = tagged.map((tag) => {
-					const { value } = tag;
-					const index = content.indexOf(value, currOffset);
-					currOffset = index + value.length;
+				const marks = termsArr.map((term) => {
+					const { text, post, tags } = term;
+					const start = content.indexOf(text, currOffset);
+					currOffset = start + text.length;
 
-					return posMark(tag.tag, tag.pos).range(
-						index,
-						index + value.length
-					);
-					// return { from: index, to: currOffset, mark };
+					return posMark(...tags).range(start, currOffset);
 				});
 
 				console.log({ marks });

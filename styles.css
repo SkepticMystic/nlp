@@ -1,1 +1,102 @@
-/*  */
+/* Things */
+.Person {
+}
+.Duration {
+}
+.Date {
+}
+.WeekDay {
+}
+.Month {
+}
+.Year {
+}
+
+/* Numbers */
+.Cardinal {
+}
+.Ordinal {
+}
+.NumericValue {
+	/* e.g. "fifth" */
+}
+.TextValue {
+}
+
+/* Count */
+.Singular {
+}
+.Plural {
+}
+
+/* Tenses */
+
+.PastTense {
+}
+.PresentTense {
+}
+.FutureTense {
+}
+
+/* Names */
+.MaleName {
+}
+.FemaleName {
+}
+.FirstName {
+}
+.LastName {
+}
+
+/* Parts of Speech */
+.Noun {
+}
+.Verb {
+}
+
+.Adjective {
+}
+.Gerund {
+}
+.ProperNoun {
+}
+.Conjunction {
+}
+.Article {
+}
+.Adverb {
+}
+.Preposition {
+}
+.Possessive {
+}
+.Copula {
+}
+.Determiner {
+}
+.Demonym {
+}
+.Infinitive {
+}
+.Comparable {
+}
+.Auxiliary {
+}
+.Superlative {
+}
+.Modal {
+}
+.Uncountable {
+}
+.PhrasalVerb {
+}
+.Particle {
+}
+.Negative {
+}
+.Imperative {
+}
+.Expression {
+}
+.QuestionWord {
+}
