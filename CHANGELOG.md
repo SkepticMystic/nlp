@@ -1,4 +1,18 @@
 ## Changelog
+### [0.0.6](https://github.com/SkepticMystic/nlp/compare/0.0.5...0.0.6) (2021-12-19)
+
+
+### Features
+
+* **API:** :sparkles: getAvgSentimentFromDoc ([21d9d20](https://github.com/SkepticMystic/nlp/commit/21d9d203c798e1c75d9b9777df97ae3d9c5cc69b))
+* **EditorPoS:** :sparkles: Mark PoS in editor ([243e456](https://github.com/SkepticMystic/nlp/commit/243e4563623e97b8e11663e80192cde6f272cbc4))
+* **PosModal:** :sparkles: PoSModal ([f0b125b](https://github.com/SkepticMystic/nlp/commit/f0b125bf86539dd198a63b0b07d905f686f8ac5c))
+
+
+### Documentation
+
+* :memo: Update Readme ([96276fb](https://github.com/SkepticMystic/nlp/commit/96276fbc1f681fcdeb89bda7f7214e9557e3cebb))
+
 ### [0.0.5](https://github.com/SkepticMystic/nlp/compare/0.0.4...0.0.5) (2021-12-19)
 
 
