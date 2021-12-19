@@ -1,4 +1,16 @@
 ## Changelog
+### [0.0.4](https://github.com/SkepticMystic/nlp/compare/0.0.3...0.0.4) (2021-12-19)
+
+
+### Features
+
+* :sparkles: Like 40 new commands for working with words ([a44eaa6](https://github.com/SkepticMystic/nlp/commit/a44eaa67824e5409c3d97a7dfec019836ee165bf))
+
+
+### Fixes
+
+* **MarkupModal:** :bug: Overflow when content is too long ([2c5ec94](https://github.com/SkepticMystic/nlp/commit/2c5ec944b35c4c57ef2673a42f5bef5e3a85498d))
+
 ### [0.0.3](https://github.com/SkepticMystic/nlp/compare/0.0.2...0.0.3) (2021-12-18)
 
 
