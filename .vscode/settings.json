@@ -2,6 +2,7 @@
     "conventionalCommits.scopes": [
         "MarkupModal",
         "MatchModal",
-        "API"
+        "API",
+        "PosModal"
     ]
 }
