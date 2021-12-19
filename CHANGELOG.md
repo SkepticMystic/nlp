@@ -1,4 +1,11 @@
 ## Changelog
+### [0.0.7](https://github.com/SkepticMystic/nlp/compare/0.0.6...0.0.7) (2021-12-19)
+
+
+### Features
+
+* **HighlightPoS:** :sparkles: New function to apply class to different Parts of Speech! ([9cfe644](https://github.com/SkepticMystic/nlp/commit/9cfe64422e4d54605e7fd429f2a02b461ba014a3))
+
 ### [0.0.6](https://github.com/SkepticMystic/nlp/compare/0.0.5...0.0.6) (2021-12-19)
 
 
