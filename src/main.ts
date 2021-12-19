@@ -16,10 +16,10 @@ import winkNLP, {
 } from "wink-nlp";
 import Tagger from "wink-pos-tagger";
 import { DEFAULT_SETTINGS } from "./const";
-import { Settings } from "./interfaces";
+import { Sentiment, Settings } from "./interfaces";
 import { MarkupModal } from "./MarkupModal";
 import { SettingTab } from "./SettingTab";
-const posTagger = require("wink-pos-tagger");
+const sentiment: (str: string) => Sentiment = require("wink-sentiment");
 
 export default class NLPPlugin extends Plugin {
 	settings: Settings;
@@ -296,6 +296,23 @@ export default class NLPPlugin extends Plugin {
 					item.out(its.type) === "word" && !item.out(its.stopWordFlag)
 			)
 			.out(its.value, as.set) as Set<string>;
+	}
+
+	getAvgSentimentFromDoc(
+		doc: Document,
+		{ perSentence = false, normalised = true } = {}
+	): number {
+		const scoreType = normalised ? "normalizedScore" : "score";
+		if (perSentence) {
+			const sentences = doc.sentences().out();
+			const sentiments = sentences.map((sentence) => sentiment(sentence));
+			return (
+				sentiments.reduce((a, b) => a + b[scoreType], 0) /
+				sentences.length
+			);
+		} else {
+			return sentiment(doc.out())[scoreType];
+		}
 	}
 
 	async getWinkDocFromFile(
