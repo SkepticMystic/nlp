@@ -86,6 +86,7 @@
 		border-radius: 10px;
 		padding: 10px;
 		max-height: 500px;
+		overflow-y: scroll;
 	}
 
 	.left-options,
