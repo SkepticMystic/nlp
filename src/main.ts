@@ -136,11 +136,13 @@ export default class NLPPlugin extends Plugin {
 			});
 		});
 
-		this.app.workspace.onLayoutReady(async () => {
-			await this.refreshDocs();
-			// const worker = Worker();
-			// worker.postMessage("{ message: 'hello' }");
-		});
+		if (this.settings.refreshDocsOnLoad) {
+			this.app.workspace.onLayoutReady(async () => {
+				await this.refreshDocs();
+				// const worker = Worker();
+				// worker.postMessage("{ message: 'hello' }");
+			});
+		}
 	}
 
 	onunload() {}

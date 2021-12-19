@@ -13,6 +13,7 @@ export class SettingTab extends PluginSettingTab {
 	display(): void {
 		let { containerEl } = this;
 		containerEl.empty();
+		const { settings } = this.plugin;
 
 		// new CustomEntityInput({
 		// 	target: containerEl,
@@ -27,9 +28,23 @@ export class SettingTab extends PluginSettingTab {
 			.setDesc(customEntityFragment)
 			.addText((text) =>
 				text
-					.setValue(this.plugin.settings.customEntityFilePath)
+					.setValue(settings.customEntityFilePath)
 					.onChange(async (value) => {
-						this.plugin.settings.customEntityFilePath = value;
+						settings.customEntityFilePath = value;
+						await this.plugin.saveSettings();
+					})
+			);
+
+		new Setting(containerEl)
+			.setName("Index Docs on Startup")
+			.setDesc(
+				"When Obsidian loads, should NLP create an index of the files in your vault? This can take a while to do (~3-7 seconds). It is currently only useful to do if you have the Graph Analysis plugin enabled."
+			)
+			.addToggle((toggle) =>
+				toggle
+					.setValue(settings.refreshDocsOnLoad)
+					.onChange(async (value) => {
+						settings.refreshDocsOnLoad = value;
 						await this.plugin.saveSettings();
 					})
 			);
