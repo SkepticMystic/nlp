@@ -1,10 +1,6 @@
-import { StateEffect, StateField } from "@codemirror/state";
-// import * as Worker from "./Workers/refreshDocs.worker";
-import { Decoration, EditorView } from "@codemirror/view";
 import compromise from "compromise";
 import { normalizePath, Notice, Plugin, TFile } from "obsidian";
 import { copy } from "obsidian-community-lib";
-import { MatchModal } from "./MatchModal";
 import model from "wink-eng-lite-web-model";
 import winkNLP, {
 	Bow,
@@ -14,10 +10,11 @@ import winkNLP, {
 	ItemToken,
 	WinkMethods,
 } from "wink-nlp";
-import Tagger from "wink-pos-tagger";
 import { DEFAULT_SETTINGS } from "./const";
 import { Sentiment, Settings } from "./interfaces";
 import { MarkupModal } from "./MarkupModal";
+import { MatchModal } from "./MatchModal";
+import { PoSModal } from "./PoSModal";
 import { SettingTab } from "./SettingTab";
 const sentiment: (str: string) => Sentiment = require("wink-sentiment");
 
@@ -43,20 +40,20 @@ export default class NLPPlugin extends Plugin {
 			this.winkModel.learnCustomEntities(customEntities);
 		}
 
-		this.addCommand({
-			id: "markup-modal",
-			name: "Open Markup Modal",
-			callback: () => {
-				new MarkupModal(this.app, this).open();
-			},
+		[
+			{ name: "Markup", modal: MarkupModal },
+			{ name: "Match", modal: MatchModal },
+			{ name: "PoS", modal: PoSModal },
+		].forEach((modalType) => {
+			this.addCommand({
+				id: `open-${modalType.name}`,
+				name: `Open ${modalType.name} Modal`,
+				callback: () => {
+					new modalType.modal(this.app, this).open();
+				},
+			});
 		});
-		this.addCommand({
-			id: "match-modal",
-			name: "Open Match Modal",
-			callback: () => {
-				new MatchModal(this.app, this).open();
-			},
-		});
+
 		this.addCommand({
 			id: "refresh-docs",
 			name: "Refresh Docs",
