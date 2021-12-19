@@ -1,3 +1,5 @@
+import { StateEffect, StateField } from "@codemirror/state";
+import { Decoration, EditorView } from "@codemirror/view";
 import compromise from "compromise";
 import { normalizePath, Notice, Plugin, TFile } from "obsidian";
 import { copy } from "obsidian-community-lib";
@@ -10,12 +12,15 @@ import winkNLP, {
 	ItemToken,
 	WinkMethods,
 } from "wink-nlp";
+import Tagger from "wink-pos-tagger";
 import { DEFAULT_SETTINGS } from "./const";
 import { Sentiment, Settings } from "./interfaces";
 import { MarkupModal } from "./MarkupModal";
 import { MatchModal } from "./MatchModal";
 import { PoSModal } from "./PoSModal";
 import { SettingTab } from "./SettingTab";
+const posTagger = require("wink-pos-tagger");
+
 const sentiment: (str: string) => Sentiment = require("wink-sentiment");
 
 export default class NLPPlugin extends Plugin {
@@ -62,104 +67,65 @@ export default class NLPPlugin extends Plugin {
 			},
 		});
 
-		// const addMarks = StateEffect.define<Decoration>(),
-		// 	filterMarks = StateEffect.define();
+		const addMarks = StateEffect.define(),
+			filterMarks = StateEffect.define();
 
-		// // This value must be added to the set of extensions to enable this
-		// const markField = StateField.define({
-		// 	// Start with an empty set of decorations
-		// 	create() {
-		// 		return Decoration.none;
-		// 	},
-		// 	// This is called whenever the editor updates—it computes the new set
-		// 	update(value, tr) {
-		// 		// Move the decorations to account for document changes
-		// 		value = value.map(tr.changes);
-		// 		// If this transaction adds or removes decorations, apply those changes
-		// 		for (let effect of tr.effects) {
-		// 			if (effect.is(addMarks))
-		// 				value = value.update({ add: effect.value, sort: true });
-		// 			else if (effect.is(filterMarks))
-		// 				value = value.update({ filter: effect.value });
-		// 		}
-		// 		return value;
-		// 	},
-		// 	// Indicate that this field provides a set of decorations
-		// 	provide: (f) => EditorView.decorations.from(f),
-		// });
-		// this.registerEditorExtension(markField);
+		const markField = StateField.define({
+			create() {
+				return Decoration.none;
+			},
+			// This is called whenever the editor updates—it computes the new set
+			update(value, tr) {
+				// Move the decorations to account for document changes
+				value = value.map(tr.changes);
+				// If this transaction adds or removes decorations, apply those changes
+				for (let effect of tr.effects) {
+					if (effect.is(addMarks))
+						value = value.update({ add: effect.value, sort: true });
+					else if (effect.is(filterMarks))
+						value = value.update({ filter: effect.value });
+				}
+				return value;
+			},
+			// Indicate that this field provides a set of decorations
+			provide: (f) => EditorView.decorations.from(f),
+		});
+		this.registerEditorExtension(markField);
 
-		// const strikeMark = Decoration.mark({
-		// 	attributes: { style: "text-decoration: line-through" },
-		// });
+		const strikeMark = Decoration.mark({
+			attributes: { style: "text-decoration: line-through" },
+		});
 
-		// this.addCommand({
-		// 	id: "tag-pos",
-		// 	name: "Tag PoS",
-		// 	editorCallback: async (editor) => {
-		// 		(editor.cm as EditorView).dispatch({
-		// 			effects: addMarks.of([strikeMark.range(1, 40)]),
-		// 		});
+		const posMark = (tag: string, pos: string) =>
+			Decoration.mark({ class: `${tag} ${pos}` });
 
-		// 		const tagger: Tagger = posTagger();
-		// 		console.log(
-		// 			tagger.tagSentence(
-		// 				"He is trying to fish for fish in the lake."
-		// 			)
-		// 		);
-		// function addIndentationMarkers(view: EditorView) {
-		// 	const builder = new RangeSetBuilder<Decoration>();
+		this.addCommand({
+			id: "tag-pos",
+			name: "Tag PoS",
+			editorCallback: async (editor) => {
+				let content = editor.getValue();
+				const tagger: Tagger = posTagger();
+				const tagged = tagger.tagSentence(content);
 
-		// 	for (const { from, to } of view.visibleRanges) {
-		// 		let pos = from;
+				let currOffset = 0;
+				const marks = tagged.map((tag) => {
+					const { value } = tag;
+					const index = content.indexOf(value, currOffset);
+					currOffset = index + value.length;
 
-		// 		while (pos <= to) {
-		// 			const line = view.state.doc.lineAt(pos);
-		// 			const { text } = line;
+					return posMark(tag.tag, tag.pos).range(
+						index,
+						index + value.length
+					);
+					// return { from: index, to: currOffset, mark };
+				});
 
-		// 			// Decorate empty line
-		// 			if (text.trim().length === 0) {
-		// 				const indentationWidget = Decoration.widget({
-		// 					widget: myWidget,
-		// 				});
-
-		// 				builder.add(
-		// 					line.from,
-		// 					line.from,
-		// 					indentationWidget
-		// 				);
-		// 			}
-
-		// 			// Move on to next line
-		// 			pos = line.to + 1;
-		// 		}
-		// 	}
-
-		// 	return builder.finish();
-		// }
-
-		// function createIndentMarkerPlugin() {
-		// 	return ViewPlugin.define(
-		// 		(view) => ({
-		// 			decorations: addIndentationMarkers(view),
-		// 			update(update) {
-		// 				if (
-		// 					update.docChanged ||
-		// 					update.viewportChanged
-		// 				) {
-		// 					this.decorations = addIndentationMarkers(
-		// 						update.view
-		// 					);
-		// 				}
-		// 			},
-		// 		}),
-		// 		{
-		// 			decorations: (v) => v.decorations,
-		// 		}
-		// 	);
-		// }
-		// 	},
-		// });
+				console.log({ marks });
+				(editor.cm as EditorView).dispatch({
+					effects: addMarks.of(marks),
+				});
+			},
+		});
 
 		compromise.extend(require("compromise-numbers"));
 		compromise.extend(require("compromise-adjectives"));
@@ -235,6 +201,45 @@ export default class NLPPlugin extends Plugin {
 				},
 			});
 		});
+		// this.addCommand({
+		// 	id: `sent`,
+		// 	name: `Sent`,
+		// 	callback: () => {
+		// 		const doc = this.Docs[this.app.workspace.getActiveFile().path];
+		// 		console.time("1");
+		// 		console.log(
+		// 			this.getAvgSentimentFromDoc(doc, {
+		// 				normalised: true,
+		// 				perSentence: true,
+		// 			})
+		// 		);
+		// 		console.timeEnd("1");
+		// 		console.time("2");
+		// 		console.log(
+		// 			this.getAvgSentimentFromDoc(doc, {
+		// 				normalised: true,
+		// 				perSentence: false,
+		// 			})
+		// 		);
+		// 		console.timeEnd("2");
+		// 		// console.time("3");
+		// 		// console.log(
+		// 		// 	this.getAvgSentimentFromDoc(doc, {
+		// 		// 		normalised: false,
+		// 		// 		perSentence: true,
+		// 		// 	})
+		// 		// );
+		// 		// console.timeEnd("3");
+		// 		// console.time("4");
+		// 		// console.log(
+		// 		// 	this.getAvgSentimentFromDoc(doc, {
+		// 		// 		normalised: false,
+		// 		// 		perSentence: false,
+		// 		// 	})
+		// 		// );
+		// 		// console.timeEnd("4");
+		// 	},
+		// });
 
 		if (this.settings.refreshDocsOnLoad) {
 			this.app.workspace.onLayoutReady(async () => {

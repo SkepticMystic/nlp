@@ -3,6 +3,7 @@
         "MarkupModal",
         "MatchModal",
         "API",
-        "PosModal"
+        "PosModal",
+        "EditorPoS"
     ]
 }
