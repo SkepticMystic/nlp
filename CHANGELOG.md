@@ -1,4 +1,12 @@
 ## Changelog
+### [0.0.8](https://github.com/SkepticMystic/nlp/compare/0.0.7...0.0.8) (2021-12-20)
+
+
+### Features
+
+* **API:** :sparkles: Better notice when starting/finishing refreshDocs ([8adbc6f](https://github.com/SkepticMystic/nlp/commit/8adbc6fc2249478f9b459f34339ccf6df4452994))
+* **API:** :sparkles: Notice on start and end of refreshDocs ([967e1d6](https://github.com/SkepticMystic/nlp/commit/967e1d688c9b1bb64a30827756692d376035712b))
+
 ### [0.0.7](https://github.com/SkepticMystic/nlp/compare/0.0.6...0.0.7) (2021-12-19)
 
 
