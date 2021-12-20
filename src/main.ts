@@ -119,8 +119,8 @@ export default class NLPPlugin extends Plugin {
 		// 	},
 		// });
 		this.addCommand({
-			id: "highlight-pos",
-			name: "Highlight PoS",
+			id: "highlight-parts-of-speech",
+			name: "Highlight Parts of Speech",
 			editorCallback: async (editor) => {
 				let content = editor.getValue();
 				const doc = compromise(content);
