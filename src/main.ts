@@ -226,51 +226,10 @@ export default class NLPPlugin extends Plugin {
 				},
 			});
 		});
-		// this.addCommand({
-		// 	id: `sent`,
-		// 	name: `Sent`,
-		// 	callback: () => {
-		// 		const doc = this.Docs[this.app.workspace.getActiveFile().path];
-		// 		console.time("1");
-		// 		console.log(
-		// 			this.getAvgSentimentFromDoc(doc, {
-		// 				normalised: true,
-		// 				perSentence: true,
-		// 			})
-		// 		);
-		// 		console.timeEnd("1");
-		// 		console.time("2");
-		// 		console.log(
-		// 			this.getAvgSentimentFromDoc(doc, {
-		// 				normalised: true,
-		// 				perSentence: false,
-		// 			})
-		// 		);
-		// 		console.timeEnd("2");
-		// 		// console.time("3");
-		// 		// console.log(
-		// 		// 	this.getAvgSentimentFromDoc(doc, {
-		// 		// 		normalised: false,
-		// 		// 		perSentence: true,
-		// 		// 	})
-		// 		// );
-		// 		// console.timeEnd("3");
-		// 		// console.time("4");
-		// 		// console.log(
-		// 		// 	this.getAvgSentimentFromDoc(doc, {
-		// 		// 		normalised: false,
-		// 		// 		perSentence: false,
-		// 		// 	})
-		// 		// );
-		// 		// console.timeEnd("4");
-		// 	},
-		// });
 
 		if (this.settings.refreshDocsOnLoad) {
 			this.app.workspace.onLayoutReady(async () => {
 				await this.refreshDocs();
-				// const worker = Worker();
-				// worker.postMessage("{ message: 'hello' }");
 			});
 		}
 	}
@@ -292,16 +251,14 @@ export default class NLPPlugin extends Plugin {
 			for (const file of this.app.vault.getMarkdownFiles()) {
 				this.Docs[file.path] = await this.getWinkDocFromFile(file);
 			}
-			new Notice("Docs refreshed");
+			notice.setMessage("Docs Refreshed");
 		} catch (e) {
 			console.log(e);
-			new Notice(
+			notice.setMessage(
 				"An error occured, check the console for more information."
 			);
 		}
 		console.timeEnd("refreshDocs");
-		notice.hide();
-		notice.setMessage("Docs Refreshed");
 	}
 
 	getNoStopBoW(doc: Document, type: "tokens" | "entities" = "tokens") {
