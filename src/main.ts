@@ -18,7 +18,6 @@ import { MarkupModal } from "./MarkupModal";
 import { MatchModal } from "./MatchModal";
 import { PoSModal } from "./PoSModal";
 import { SettingTab } from "./SettingTab";
-const posTagger = require("wink-pos-tagger");
 
 const sentiment: (str: string) => Sentiment = require("wink-sentiment");
 
@@ -134,18 +133,23 @@ export default class NLPPlugin extends Plugin {
 				}[] = [];
 				json.forEach((sentence) => termsArr.push(...sentence.terms));
 
-				console.log(termsArr);
-
 				let currOffset = 0;
 				const marks = termsArr.map((term) => {
-					const { text, post, tags } = term;
+					const { text, tags } = term;
 					const start = content.indexOf(text, currOffset);
 					currOffset = start + text.length;
 
-					return posMark(...tags).range(start, currOffset);
+					return posMark(
+						...tags.map((tag) =>
+							tag === "MaleName"
+								? "MasculineName"
+								: tag === "FemaleName"
+								? "FeminineName"
+								: tag
+						)
+					).range(start, currOffset);
 				});
 
-				console.log({ marks });
 				(editor.cm as EditorView).dispatch({
 					effects: addMarks.of(marks),
 				});
