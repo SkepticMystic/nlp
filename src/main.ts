@@ -286,6 +286,7 @@ export default class NLPPlugin extends Plugin {
 	}
 
 	async refreshDocs() {
+		const notice = new Notice("Refreshing docs...");
 		console.time("refreshDocs");
 		try {
 			for (const file of this.app.vault.getMarkdownFiles()) {
@@ -299,6 +300,8 @@ export default class NLPPlugin extends Plugin {
 			);
 		}
 		console.timeEnd("refreshDocs");
+		notice.hide();
+		notice.setMessage("Docs Refreshed");
 	}
 
 	getNoStopBoW(doc: Document, type: "tokens" | "entities" = "tokens") {
