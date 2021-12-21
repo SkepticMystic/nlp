@@ -1,18 +1,10 @@
-// import { WinkMethods } from "wink-nlp";
+const winkNLP = require("wink-nlp");
+const model = require("wink-eng-lite-web-model");
+const nlp = winkNLP(model);
 
-// self.onmessage = async function (e) {
-// 	console.log(e);
-// 	const docs = {};
-// 	const {
-// 		contentObj,
-// 		winkModel,
-// 	}: { contentObj: { [path: string]: string }; winkModel: WinkMethods } =
-// 		e.data;
+onmessage = function (e) {
+	const message = nlp.readDoc(e.data).tokens().out();
+	console.log(`[From Main (Text)]: ${e.data}`);
 
-// 	console.log({ contentObj });
-
-// 	for (const path in contentObj) {
-// 		docs[path] = winkModel.readDoc(contentObj[path]);
-// 	}
-// 	self.postMessage(docs);
-// };
+	postMessage(JSON.stringify(message));
+};

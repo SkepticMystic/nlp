@@ -18,6 +18,7 @@ import { MarkupModal } from "./MarkupModal";
 import { MatchModal } from "./MatchModal";
 import { PoSModal } from "./PoSModal";
 import { SettingTab } from "./SettingTab";
+// import myWorker from "./Workers/nlp.js";
 
 const sentiment: (str: string) => Sentiment = require("wink-sentiment");
 
@@ -25,6 +26,7 @@ export default class NLPPlugin extends Plugin {
 	settings: Settings;
 	winkModel: WinkMethods;
 	Docs: { [path: string]: Document } = {};
+	worker: Worker;
 
 	async onload() {
 		console.log("loading");
@@ -92,31 +94,6 @@ export default class NLPPlugin extends Plugin {
 		const posMark = (...classes: string[]) =>
 			Decoration.mark({ class: `${classes.join(" ")}` });
 
-		// this.addCommand({
-		// 	id: "highlight-pos",
-		// 	name: "Highlight PoS",
-		// 	editorCallback: async (editor) => {
-		// 		let content = editor.getValue();
-		// 		const tagger: Tagger = posTagger();
-		// 		const tagged = tagger.tagSentence(content);
-
-		// 		let currOffset = 0;
-		// 		const marks = tagged.map((tag) => {
-		// 			const { value } = tag;
-		// 			const index = content.indexOf(value, currOffset);
-		// 			currOffset = index + value.length;
-
-		// 			return posMark(tag.tag, tag.pos).range(
-		// 				index,
-		// 				index + value.length
-		// 			);
-		// 		});
-
-		// 		(editor.cm as EditorView).dispatch({
-		// 			effects: addMarks.of(marks),
-		// 		});
-		// 	},
-		// });
 		this.addCommand({
 			id: "highlight-parts-of-speech",
 			name: "Highlight Parts of Speech",
@@ -234,6 +211,14 @@ export default class NLPPlugin extends Plugin {
 		if (this.settings.refreshDocsOnLoad) {
 			this.app.workspace.onLayoutReady(async () => {
 				await this.refreshDocs();
+
+				this.worker = new Worker(
+					"C:/Users/rossk/OneDrive/1D Personal/Other Obsidian Vaults/Second-Brain-main/.obsidian/plugins/nlp/src/Workers/nlp.js"
+				);
+
+				console.log(this.worker);
+				this.worker.postMessage("test");
+				// this.worker = new Worker("./Workers/refreshDocs.worker");
 			});
 		}
 	}
