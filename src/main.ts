@@ -18,7 +18,7 @@ import { MarkupModal } from "./MarkupModal";
 import { MatchModal } from "./MatchModal";
 import { PoSModal } from "./PoSModal";
 import { SettingTab } from "./SettingTab";
-// import myWorker from "./Workers/nlp.js";
+import myWorker from "./Workers/refreshDocs.worker";
 
 const sentiment: (str: string) => Sentiment = require("wink-sentiment");
 
@@ -212,9 +212,7 @@ export default class NLPPlugin extends Plugin {
 			this.app.workspace.onLayoutReady(async () => {
 				await this.refreshDocs();
 
-				this.worker = new Worker(
-					"C:/Users/rossk/OneDrive/1D Personal/Other Obsidian Vaults/Second-Brain-main/.obsidian/plugins/nlp/src/Workers/nlp.js"
-				);
+				this.worker = myWorker();
 
 				console.log(this.worker);
 				this.worker.postMessage("test");
