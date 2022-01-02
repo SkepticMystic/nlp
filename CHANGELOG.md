@@ -1,4 +1,11 @@
 ## Changelog
+### [0.1.2](https://github.com/SkepticMystic/nlp/compare/0.1.1...0.1.2) (2022-01-02)
+
+
+### Fixes
+
+* **HighlightPoS:** :bug: Check for zero-length marks (Fix [#11](https://github.com/SkepticMystic/nlp/issues/11)) ([db7229e](https://github.com/SkepticMystic/nlp/commit/db7229ee25efc4ef889bb54d98264ad9c884177e))
+
 ### [0.1.1](https://github.com/SkepticMystic/nlp/compare/0.1.0...0.1.1) (2022-01-02)
 
 
