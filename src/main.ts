@@ -145,12 +145,15 @@ export default class NLPPlugin extends Plugin {
 					.json()
 					.map((sentence) => {
 						const { text } = sentence;
-						console.log(text);
-						const start = content.indexOf(text, currOffset);
+						const start = content.indexOf(
+							text.slice(0, 5),
+							currOffset
+						);
 						currOffset = start + text.length;
 
 						return classedMark("Sentence").range(start, currOffset);
 					});
+				console.log({ sentenceMarks });
 				(editor.cm as EditorView).dispatch({
 					effects: addMarks.of(sentenceMarks),
 				});
