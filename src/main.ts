@@ -12,7 +12,7 @@ import winkNLP, {
 	ItemToken,
 	WinkMethods,
 } from "wink-nlp";
-import { DEFAULT_SETTINGS } from "./const";
+import { DEFAULT_SETTINGS, ENTITIES, TEXT_MANIPULATION_CMDS } from "./const";
 import { Sentiment, Settings } from "./interfaces";
 import { MarkupModal } from "./MarkupModal";
 import { MatchModal } from "./MatchModal";
@@ -160,40 +160,9 @@ export default class NLPPlugin extends Plugin {
 		compromise.extend(require("compromise-numbers"));
 		compromise.extend(require("compromise-adjectives"));
 		compromise.extend(require("compromise-dates"));
-		Object.entries({
-			verbs: [
-				"toPastTense",
-				"toPresentTense",
-				"toFutureTense",
-				"toInfinitive",
-				"toGerund",
-				"toParticiple",
-				"toPositive",
-				"toNegative",
-			],
-			nouns: ["toPlural", "toSingular", "toPossessive"],
-			adjectives: [
-				"toSuperlative",
-				"toComparative",
-				"toAdverb",
-				"toVerb",
-				"toNoun",
-			],
-			dates: ["toShortForm", "toLongForm"],
 
-			numbers: [
-				"toText",
-				"toNumber",
-				"toOrdinal",
-				"toCardinal",
-				"increment",
-				"decrement",
-				"toLocaleString",
-			],
-			fractions: ["toDecimal", "normalize", "toText", "toPercentage"],
-			percentages: ["toFraction"],
-		}).forEach(([pos, fns]: [string, string[]]) => {
-			fns.forEach((fn) => {
+		for (const pos in TEXT_MANIPULATION_CMDS) {
+			TEXT_MANIPULATION_CMDS[pos].forEach((fn) => {
 				this.addCommand({
 					id: `${pos} - ${fn}`,
 					name: `${pos} - ${fn}`,
@@ -202,24 +171,13 @@ export default class NLPPlugin extends Plugin {
 						const compDoc = compromise(sel);
 						compDoc[pos]()[fn]();
 						const newSel = compDoc.text();
-
 						ed.replaceSelection(newSel);
 					},
 				});
 			});
-		});
+		}
 
-		[
-			"emails",
-			"emoticons",
-			"emjois",
-			"atMentions",
-			"abbreviations",
-			"people",
-			"places",
-			"organizations",
-			"topics",
-		].forEach((entity) => {
+		ENTITIES.forEach((entity) => {
 			this.addCommand({
 				id: `entity - ${entity}`,
 				name: `entity - ${entity}`,
