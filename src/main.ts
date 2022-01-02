@@ -91,7 +91,7 @@ export default class NLPPlugin extends Plugin {
 		});
 		this.registerEditorExtension(markField);
 
-		const posMark = (...classes: string[]) =>
+		const classedMark = (...classes: string[]) =>
 			Decoration.mark({ class: `${classes.join(" ")}` });
 
 		this.addCommand({
@@ -107,16 +107,15 @@ export default class NLPPlugin extends Plugin {
 					tags: string[];
 					pre: string;
 					post: string;
-				}[] = [];
-				json.forEach((sentence) => termsArr.push(...sentence.terms));
+				}[] = json.map((sentence) => sentence.terms).flat();
 
 				let currOffset = 0;
-				const marks = termsArr.map((term) => {
+				const posMarks = termsArr.map((term) => {
 					const { text, tags } = term;
 					const start = content.indexOf(text, currOffset);
 					currOffset = start + text.length;
 
-					return posMark(
+					return classedMark(
 						...tags.map((tag) =>
 							tag === "MaleName"
 								? "MasculineName"
@@ -128,7 +127,32 @@ export default class NLPPlugin extends Plugin {
 				});
 
 				(editor.cm as EditorView).dispatch({
-					effects: addMarks.of(marks),
+					effects: addMarks.of(posMarks),
+				});
+			},
+		});
+		compromise.extend(require("compromise-sentences"));
+		this.addCommand({
+			id: "highlight-sentences",
+			name: "Highlight Sentences",
+			editorCallback: async (editor) => {
+				let content = editor.getValue();
+				const doc = compromise(content);
+
+				let currOffset = 0;
+				const sentenceMarks = doc
+					.sentences()
+					.json()
+					.map((sentence) => {
+						const { text } = sentence;
+						console.log(text);
+						const start = content.indexOf(text, currOffset);
+						currOffset = start + text.length;
+
+						return classedMark("Sentence").range(start, currOffset);
+					});
+				(editor.cm as EditorView).dispatch({
+					effects: addMarks.of(sentenceMarks),
 				});
 			},
 		});
