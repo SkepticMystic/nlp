@@ -1,4 +1,11 @@
 ## Changelog
+### [0.1.1](https://github.com/SkepticMystic/nlp/compare/0.1.0...0.1.1) (2022-01-02)
+
+
+### Fixes
+
+* **HighlightPoS:** :bug: Don't use the whole sentence to index content ([9d0b324](https://github.com/SkepticMystic/nlp/commit/9d0b3241a37bafd0bcf82dc55ae50ff6af1119f6))
+
 ## [0.1.0](https://github.com/SkepticMystic/nlp/compare/0.0.8...0.1.0) (2022-01-02)
 
 
