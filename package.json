@@ -26,6 +26,9 @@
 		],
 		"header": "## Changelog"
 	},
+	"browser": {
+		"buffer": "buffer"
+	},
 	"keywords": [],
 	"author": "",
 	"license": "MIT",
@@ -53,10 +56,12 @@
 		"@codemirror/state": "^0.19.6",
 		"@codemirror/view": "^0.19.34",
 		"@nlpjs/basic": "^4.22.0",
+		"buffer": "^6.0.3",
 		"compromise": "^13.11.4",
 		"compromise-adjectives": "^0.0.7",
 		"compromise-dates": "^2.2.1",
 		"compromise-numbers": "^1.4.0",
+		"compromise-sentences": "^0.3.0",
 		"esbuild-plugin-inline-worker": "^0.1.1",
 		"esbuild-svelte": "^0.6.0",
 		"node-nlp": "^4.22.1",

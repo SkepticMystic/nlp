@@ -24,12 +24,6 @@ esbuild
 		},
 		entryPoints: ["src/main.ts"],
 		bundle: true,
-		inject: ["node_modules/node-stdlib-browser/helpers/esbuild/shim.js"],
-		define: {
-			global: "global",
-			process: "process",
-			Buffer: "Buffer",
-		},
 
 		external: [
 			"obsidian",
@@ -59,16 +53,22 @@ esbuild
 		sourcemap: prod ? false : "inline",
 		treeShaking: true,
 		outfile: "main.js",
+		inject: ["node_modules/node-stdlib-browser/helpers/esbuild/shim.js"],
+		define: {
+			global: "global",
+			process: "process",
+			Buffer: "Buffer",
+		},
 		plugins: [
 			sveltePlugin({
 				compilerOptions: { css: true },
 				preprocess: sveltePreprocess(),
 			}),
+			stdlibBrowserPlugin(stdLibBrowser),
 			inlineWorkerPlugin({
 				minify: false,
 				platform: "browser",
 			}),
-			stdlibBrowserPlugin(stdLibBrowser),
 		],
 	})
 	.catch(() => process.exit(1));

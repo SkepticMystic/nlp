@@ -236,11 +236,19 @@ export default class NLPPlugin extends Plugin {
 			this.app.workspace.onLayoutReady(async () => {
 				await this.refreshDocs();
 
-				this.worker = myWorker();
+				// this.worker = myWorker();
+				// const workerStr = (async function () {
+				// 	WORKER_STR
+				// 	}
+				// ).toString().slice(17);
 
-				console.log(this.worker);
-				this.worker.postMessage("test");
-				// this.worker = new Worker("./Workers/refreshDocs.worker");
+				// this.worker = new Worker(
+				// 	URL.createObjectURL(
+				// 		new Blob([workerStr], { type: "text/javascript" })
+				// 	)
+				// );
+				// console.log({ worker: this.worker });
+				// this.worker.postMessage("test");
 			});
 		}
 	}
