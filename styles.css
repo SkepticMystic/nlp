@@ -15,11 +15,21 @@
 	--noun: hsl(0 70% 55%);
 }
 
-body:not(.no-verbs) .Verb { color: var(--verb) }
-body:not(.no-adjectives) .Adjective { color: var(--adjective) }
-body:not(.no-adverbs) .Adverb { color: var(--adverb) }
-body:not(.no-conjunctions) .Conjunction { color: var(--conjunction) }
-body:not(.no-nouns) .Noun { color: var(--noun) }
+body:not(.no-verbs) .Verb {
+	color: var(--verb);
+}
+body:not(.no-adjectives) .Adjective {
+	color: var(--adjective);
+}
+body:not(.no-adverbs) .Adverb {
+	color: var(--adverb);
+}
+body:not(.no-conjunctions) .Conjunction {
+	color: var(--conjunction);
+}
+body:not(.no-nouns) .Noun {
+	color: var(--noun);
+}
 
 /* Toggles for `Parts of Speech` when using the Style Settings Plugin */
 /* @settings
