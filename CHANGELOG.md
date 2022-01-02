@@ -1,4 +1,11 @@
 ## Changelog
+## [0.1.0](https://github.com/SkepticMystic/nlp/compare/0.0.8...0.1.0) (2022-01-02)
+
+
+### Features
+
+* **HighlightPoS:** :sparkles: Cmd to highlight sentences (Fix [#12](https://github.com/SkepticMystic/nlp/issues/12)) ([e0c51e8](https://github.com/SkepticMystic/nlp/commit/e0c51e8230e43785c87471945d6a3546c5daf736))
+
 ### [0.0.8](https://github.com/SkepticMystic/nlp/compare/0.0.7...0.0.8) (2021-12-20)
 
 
