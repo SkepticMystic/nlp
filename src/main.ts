@@ -109,21 +109,27 @@ export default class NLPPlugin extends Plugin {
 					post: string;
 				}[] = json.map((sentence) => sentence.terms).flat();
 
+				const removeBias = (tag: string) =>
+					tag === "MaleName"
+						? "MasculineName"
+						: tag === "FemaleName"
+						? "FeminineName"
+						: tag;
+
 				let currOffset = 0;
-				const posMarks = termsArr.map((term) => {
+				const posMarks = [];
+				termsArr.forEach((term) => {
 					const { text, tags } = term;
 					const start = content.indexOf(text, currOffset);
 					currOffset = start + text.length;
 
-					return classedMark(
-						...tags.map((tag) =>
-							tag === "MaleName"
-								? "MasculineName"
-								: tag === "FemaleName"
-								? "FeminineName"
-								: tag
-						)
-					).range(start, currOffset);
+					if (text.length)
+						posMarks.push(
+							classedMark(...tags.map(removeBias)).range(
+								start,
+								currOffset
+							)
+						);
 				});
 
 				(editor.cm as EditorView).dispatch({
