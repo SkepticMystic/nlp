@@ -1,4 +1,11 @@
 ## Changelog
+### [0.1.3](https://github.com/SkepticMystic/nlp/compare/0.1.2...0.1.3) (2022-01-02)
+
+
+### Features
+
+* **HighlightPoS:** :sparkles: Default styles from [@pseudometa](https://github.com/pseudometa) <3 ([cda0043](https://github.com/SkepticMystic/nlp/commit/cda00434cd9c34d0db65950b7c40db883e7c75dc))
+
 ### [0.1.2](https://github.com/SkepticMystic/nlp/compare/0.1.1...0.1.2) (2022-01-02)
 
 
